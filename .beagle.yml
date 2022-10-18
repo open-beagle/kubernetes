@@ -21,7 +21,8 @@ steps:
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-s3-cache:1.0
     settings:
       restore: true
-      path: /github/open-beagle/kubernetes/master
+      root: github
+      path: /open-beagle/kubernetes/master
       mount:
         - ./
       endpoint: https://cache.wodcloud.com
