@@ -35,6 +35,8 @@ steps:
     settings:
       proxy:
         from_secret: SOCKS5_PROXY
+    depends_on:
+      - s3-cache
 
   - name: golang-kube-apiserver
     image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.19
