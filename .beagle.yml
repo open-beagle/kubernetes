@@ -22,7 +22,7 @@ steps:
     settings:
       restore: true
       root: github
-      fallback_path: open-beagle/kubernetes/master
+      path: open-beagle/kubernetes/master
       mount:
         - ./
       endpoint: https://cache.wodcloud.com
