@@ -87,10 +87,7 @@ docker run --rm \
   -e PLUGIN_ENDPOINT=$PLUGIN_ENDPOINT \
   -e PLUGIN_ACCESS_KEY=$PLUGIN_ACCESS_KEY \
   -e PLUGIN_SECRET_KEY=$PLUGIN_SECRET_KEY \
-  -e PLUGIN_ROOT=github \
-  -e DRONE_REPO_OWNER="open-beagle" \
-  -e DRONE_REPO_NAME="kubernetes" \
-  -e DRONE_COMMIT_BRANCH="master" \
+  -e PLUGIN_PATH="/cache/open-beagle/kubernetes" \
   -e PLUGIN_MOUNT="./" \
   -v $(pwd):$(pwd) \
   -w $(pwd) \
@@ -102,9 +99,7 @@ docker run --rm \
   -e PLUGIN_ENDPOINT=$PLUGIN_ENDPOINT \
   -e PLUGIN_ACCESS_KEY=$PLUGIN_ACCESS_KEY \
   -e PLUGIN_SECRET_KEY=$PLUGIN_SECRET_KEY \
-  -e DRONE_REPO_OWNER="open-beagle" \
-  -e DRONE_REPO_NAME="kubernetes" \
-  -e DRONE_COMMIT_BRANCH="master" \
+  -e PLUGIN_PATH="/cache/open-beagle/kubernetes" \
   -v $(pwd):$(pwd) \
   -w $(pwd) \
   registry.cn-qingdao.aliyuncs.com/wod/devops-s3-cache:1.0
