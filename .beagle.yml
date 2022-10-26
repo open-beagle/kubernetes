@@ -39,7 +39,7 @@ steps:
       - s3-cache
 
   - name: golang-kube-apiserver
-    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.17
+    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.16
     environment:
       KUBE_GIT_VERSION: v1.20.15-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le
@@ -51,7 +51,7 @@ steps:
       - fetch
 
   - name: golang-kube-controller-manager
-    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.17
+    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.16
     environment:
       KUBE_GIT_VERSION: v1.20.15-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le
@@ -63,7 +63,7 @@ steps:
       - golang-kube-apiserver
 
   - name: golang-kube-scheduler
-    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.17
+    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.16
     environment:
       KUBE_GIT_VERSION: v1.20.15-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le
@@ -75,7 +75,7 @@ steps:
       - golang-kube-controller-manager
 
   - name: golang-kubelet
-    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.17
+    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.16
     environment:
       KUBE_GIT_VERSION: v1.20.15-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le
@@ -87,7 +87,7 @@ steps:
       - golang-kube-scheduler
 
   - name: golang-kube-proxy
-    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.17
+    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.16
     environment:
       KUBE_GIT_VERSION: v1.20.15-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le
@@ -99,7 +99,7 @@ steps:
       - golang-kubelet
 
   - name: golang-kubectl
-    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.17
+    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.16
     environment:
       KUBE_GIT_VERSION: v1.20.15-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le

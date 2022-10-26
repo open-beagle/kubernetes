@@ -45,7 +45,7 @@ docker run -it \
 -e KUBE_GIT_VERSION=v1.20.15-beagle \
 -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64 linux/ppc64le" \
 -e GOPROXY=https://goproxy.cn \
-registry.cn-qingdao.aliyuncs.com/wod/golang:1.17
+registry.cn-qingdao.aliyuncs.com/wod/golang:1.16
 
 make all WHAT=cmd/kube-apiserver GOFLAGS=-v
 make all WHAT=cmd/kube-controller-manager GOFLAGS=-v
