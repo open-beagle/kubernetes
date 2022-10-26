@@ -7,7 +7,6 @@ git remote add upstream git@github.com:kubernetes/kubernetes.git
 
 git fetch upstream
 
-# v1.20.15
 git merge v1.20.15
 ```
 
