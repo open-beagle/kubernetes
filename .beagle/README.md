@@ -46,7 +46,7 @@ docker run -it \
 -e KUBE_GIT_VERSION=v1.20.15-beagle \
 -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64 linux/ppc64le" \
 -e GOPROXY=https://goproxy.cn \
-registry.cn-qingdao.aliyuncs.com/wod/golang:1.19
+registry.cn-qingdao.aliyuncs.com/wod/golang:1.17
 
 make all WHAT=cmd/kube-apiserver GOFLAGS=-v
 make all WHAT=cmd/kube-controller-manager GOFLAGS=-v
@@ -88,7 +88,7 @@ docker run --rm \
   -e PLUGIN_ACCESS_KEY=$PLUGIN_ACCESS_KEY \
   -e PLUGIN_SECRET_KEY=$PLUGIN_SECRET_KEY \
   -e PLUGIN_PATH="/cache/open-beagle/kubernetes" \
-  -e PLUGIN_MOUNT="./" \
+  -e PLUGIN_MOUNT="./.git" \
   -v $(pwd):$(pwd) \
   -w $(pwd) \
   registry.cn-qingdao.aliyuncs.com/wod/devops-s3-cache:1.0
