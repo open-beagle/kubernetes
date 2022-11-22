@@ -21,9 +21,8 @@ steps:
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-s3-cache:1.0
     settings:
       restore: true
-      path: /cache/open-beagle/kubernetes
       mount:
-        - ./
+        - ./.git
       endpoint: https://cache.wodcloud.com
       access_key:
         from_secret: ACCESS_KEY_MINIO
@@ -44,7 +43,6 @@ steps:
       KUBE_GIT_VERSION: v1.24.8-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le
       KUBE_GIT_TREE_STATE: archive
-      GOPROXY: https://goproxy.cn
     commands:
       - make all WHAT=cmd/kube-apiserver GOFLAGS=-v
     depends_on:
@@ -56,7 +54,6 @@ steps:
       KUBE_GIT_VERSION: v1.24.8-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le
       KUBE_GIT_TREE_STATE: archive
-      GOPROXY: https://goproxy.cn
     commands:
       - make all WHAT=cmd/kube-controller-manager GOFLAGS=-v
     depends_on:
@@ -68,7 +65,6 @@ steps:
       KUBE_GIT_VERSION: v1.24.8-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le
       KUBE_GIT_TREE_STATE: archive
-      GOPROXY: https://goproxy.cn
     commands:
       - make all WHAT=cmd/kube-scheduler GOFLAGS=-v
     depends_on:
@@ -80,7 +76,6 @@ steps:
       KUBE_GIT_VERSION: v1.24.8-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le
       KUBE_GIT_TREE_STATE: archive
-      GOPROXY: https://goproxy.cn
     commands:
       - make all WHAT=cmd/kubelet GOFLAGS=-v
     depends_on:
@@ -92,7 +87,6 @@ steps:
       KUBE_GIT_VERSION: v1.24.8-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le
       KUBE_GIT_TREE_STATE: archive
-      GOPROXY: https://goproxy.cn
     commands:
       - make all WHAT=cmd/kube-proxy GOFLAGS=-v
     depends_on:
@@ -104,7 +98,6 @@ steps:
       KUBE_GIT_VERSION: v1.24.8-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le
       KUBE_GIT_TREE_STATE: archive
-      GOPROXY: https://goproxy.cn
     commands:
       - make all WHAT=cmd/kubectl GOFLAGS=-v
     depends_on:
@@ -175,9 +168,6 @@ steps:
 
   - name: docker-kube-apiserver-arch
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:1.0
-    volumes:
-      - name: docker
-        path: /var/run/docker.sock
     settings:
       platforms: linux/amd64,linux/arm64,linux/ppc64le
       template: registry.cn-qingdao.aliyuncs.com/wod/kube-apiserver:v1.24.8-beagle-ARCH
@@ -256,9 +246,6 @@ steps:
 
   - name: docker-kube-controller-manager-arch
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:1.0
-    volumes:
-      - name: docker
-        path: /var/run/docker.sock
     settings:
       platforms: linux/amd64,linux/arm64,linux/ppc64le
       template: registry.cn-qingdao.aliyuncs.com/wod/kube-controller-manager:v1.24.8-beagle-ARCH
@@ -337,9 +324,6 @@ steps:
 
   - name: docker-kube-scheduler-arch
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:1.0
-    volumes:
-      - name: docker
-        path: /var/run/docker.sock
     settings:
       platforms: linux/amd64,linux/arm64,linux/ppc64le
       template: registry.cn-qingdao.aliyuncs.com/wod/kube-scheduler:v1.24.8-beagle-ARCH
@@ -418,9 +402,6 @@ steps:
 
   - name: docker-kubelet-arch
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:1.0
-    volumes:
-      - name: docker
-        path: /var/run/docker.sock
     settings:
       platforms: linux/amd64,linux/arm64,linux/ppc64le
       template: registry.cn-qingdao.aliyuncs.com/wod/kubelet:v1.24.8-beagle-ARCH
@@ -499,9 +480,6 @@ steps:
 
   - name: docker-kube-proxy-arch
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:1.0
-    volumes:
-      - name: docker
-        path: /var/run/docker.sock
     settings:
       platforms: linux/amd64,linux/arm64,linux/ppc64le
       template: registry.cn-qingdao.aliyuncs.com/wod/kube-proxy:v1.24.8-beagle-ARCH
@@ -580,9 +558,6 @@ steps:
 
   - name: docker-kubectl-arch
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:1.0
-    volumes:
-      - name: docker
-        path: /var/run/docker.sock
     settings:
       platforms: linux/amd64,linux/arm64,linux/ppc64le
       template: registry.cn-qingdao.aliyuncs.com/wod/kubectl:v1.24.8-beagle-ARCH
