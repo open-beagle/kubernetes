@@ -35,6 +35,8 @@ type hnsV2 struct{}
 var (
 	// LoadBalancerFlagsIPv6 enables IPV6.
 	LoadBalancerFlagsIPv6 hcn.LoadBalancerFlags = 2
+	// LoadBalancerPortMappingFlagsVipExternalIP enables VipExternalIP.
+	LoadBalancerPortMappingFlagsVipExternalIP hcn.LoadBalancerPortMappingFlags = 16
 )
 
 func (hns hnsV2) getNetworkByName(name string) (*hnsNetworkInfo, error) {
@@ -229,6 +231,20 @@ func (hns hnsV2) deleteEndpoint(hnsID string) error {
 	return err
 }
 
+// findLoadBalancerID will construct a id from the provided loadbalancer fields
+func findLoadBalancerID(endpoints []endpointsInfo, vip string, protocol, internalPort, externalPort uint16) (loadBalancerIdentifier, error) {
+	// Compute hash from backends (endpoint IDs)
+	hash, err := hashEndpointInfos(endpoints)
+	if err != nil {
+		klog.V(2).ErrorS(err, "Error hashing endpoints", "endpoints", endpoints)
+		return loadBalancerIdentifier{}, err
+	}
+	if len(vip) > 0 {
+		return loadBalancerIdentifier{protocol: protocol, internalPort: internalPort, externalPort: externalPort, vip: vip, endpointsHash: hash}, nil
+	}
+	return loadBalancerIdentifier{protocol: protocol, internalPort: internalPort, externalPort: externalPort, endpointsHash: hash}, nil
+}
+
 func (hns hnsV2) getAllLoadBalancers() (map[loadBalancerIdentifier]*loadBalancerInfo, error) {
 	lbs, err := hcn.ListLoadBalancers()
 	var id loadBalancerIdentifier
@@ -291,6 +307,9 @@ func (hns hnsV2) getLoadBalancer(endpoints []endpointsInfo, flags loadBalancerFl
 	}
 	if flags.localRoutedVIP {
 		lbPortMappingFlags |= hcn.LoadBalancerPortMappingFlagsLocalRoutedVIP
+	}
+	if flags.isVipExternalIP {
+		lbPortMappingFlags |= LoadBalancerPortMappingFlagsVipExternalIP
 	}
 
 	lbFlags := hcn.LoadBalancerFlagsNone
@@ -377,7 +396,7 @@ func hashEndpointIds(endpoints []string) (hash [20]byte, err error) {
 func hashEndpointInfos(endpoints []endpointsInfo) (hash [20]byte, err error) {
 	var id string
 	for _, ep := range endpoints {
-		id = ep.hnsID
+		id = strings.ToUpper(ep.hnsID)
 		hash, err = hashNextEndpoint(id, hash)
 		if err != nil {
 			return [20]byte{}, err
