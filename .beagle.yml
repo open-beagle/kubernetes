@@ -44,6 +44,7 @@ steps:
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le linux/mips64le
       KUBE_GIT_TREE_STATE: archive
     commands:
+      - git apply .beagle/v1.26-mips64le.patch
       - make all WHAT=cmd/kube-apiserver GOFLAGS=-v
     depends_on:
       - fetch
