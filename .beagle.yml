@@ -40,7 +40,7 @@ steps:
   - name: golang-kube-apiserver
     image: registry-vpc.cn-qingdao.aliyuncs.com/wod/golang:1.19
     environment:
-      KUBE_GIT_VERSION: v1.26.2-beagle
+      KUBE_GIT_VERSION: v1.26.3-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le linux/mips64le
       KUBE_GIT_TREE_STATE: archive
     commands:
@@ -52,7 +52,7 @@ steps:
   - name: golang-kube-controller-manager
     image: registry-vpc.cn-qingdao.aliyuncs.com/wod/golang:1.19
     environment:
-      KUBE_GIT_VERSION: v1.26.2-beagle
+      KUBE_GIT_VERSION: v1.26.3-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le linux/mips64le
       KUBE_GIT_TREE_STATE: archive
     commands:
@@ -63,7 +63,7 @@ steps:
   - name: golang-kube-scheduler
     image: registry-vpc.cn-qingdao.aliyuncs.com/wod/golang:1.19
     environment:
-      KUBE_GIT_VERSION: v1.26.2-beagle
+      KUBE_GIT_VERSION: v1.26.3-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le linux/mips64le
       KUBE_GIT_TREE_STATE: archive
     commands:
@@ -74,7 +74,7 @@ steps:
   - name: golang-kubelet
     image: registry-vpc.cn-qingdao.aliyuncs.com/wod/golang:1.19
     environment:
-      KUBE_GIT_VERSION: v1.26.2-beagle
+      KUBE_GIT_VERSION: v1.26.3-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le linux/mips64le
       KUBE_GIT_TREE_STATE: archive
     commands:
@@ -85,7 +85,7 @@ steps:
   - name: golang-kube-proxy
     image: registry-vpc.cn-qingdao.aliyuncs.com/wod/golang:1.19
     environment:
-      KUBE_GIT_VERSION: v1.26.2-beagle
+      KUBE_GIT_VERSION: v1.26.3-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le linux/mips64le
       KUBE_GIT_TREE_STATE: archive
     commands:
@@ -96,7 +96,7 @@ steps:
   - name: golang-kubectl
     image: registry-vpc.cn-qingdao.aliyuncs.com/wod/golang:1.19
     environment:
-      KUBE_GIT_VERSION: v1.26.2-beagle
+      KUBE_GIT_VERSION: v1.26.3-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le linux/mips64le
       KUBE_GIT_TREE_STATE: archive
     commands:
@@ -114,7 +114,7 @@ steps:
       dockerfile: .beagle/kube-apiserver.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-apiserver
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: amd64
       args: 'TARGETOS=linux,TARGETARCH=amd64'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -135,7 +135,7 @@ steps:
       dockerfile: .beagle/kube-apiserver.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-apiserver
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: arm64
       args: 'TARGETOS=linux,TARGETARCH=arm64'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -156,7 +156,7 @@ steps:
       dockerfile: .beagle/kube-apiserver.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-apiserver
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: ppc64le
       args: 'TARGETOS=linux,TARGETARCH=ppc64le'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -177,7 +177,7 @@ steps:
       dockerfile: .beagle/kube-apiserver.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-apiserver
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: mips64le
       args: 'TARGETOS=linux,TARGETARCH=mips64le'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -192,8 +192,8 @@ steps:
     image: registry-vpc.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:1.0
     settings:
       platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/mips64le
-      template: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-apiserver:v1.26.2-beagle-ARCH
-      target: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-apiserver:v1.26.2-beagle
+      template: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-apiserver:v1.26.3-beagle-ARCH
+      target: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-apiserver:v1.26.3-beagle
       username:
         from_secret: REGISTRY_USER_ALIYUN
       password:
@@ -214,7 +214,7 @@ steps:
       dockerfile: .beagle/kube-controller-manager.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-controller-manager
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: amd64
       args: 'TARGETOS=linux,TARGETARCH=amd64'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -235,7 +235,7 @@ steps:
       dockerfile: .beagle/kube-controller-manager.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-controller-manager
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: arm64
       args: 'TARGETOS=linux,TARGETARCH=arm64'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -256,7 +256,7 @@ steps:
       dockerfile: .beagle/kube-controller-manager.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-controller-manager
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: ppc64le
       args: 'TARGETOS=linux,TARGETARCH=ppc64le'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -277,7 +277,7 @@ steps:
       dockerfile: .beagle/kube-controller-manager.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-controller-manager
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: mips64le
       args: 'TARGETOS=linux,TARGETARCH=mips64le'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -292,8 +292,8 @@ steps:
     image: registry-vpc.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:1.0
     settings:
       platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/mips64le
-      template: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-controller-manager:v1.26.2-beagle-ARCH
-      target: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-controller-manager:v1.26.2-beagle
+      template: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-controller-manager:v1.26.3-beagle-ARCH
+      target: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-controller-manager:v1.26.3-beagle
       username:
         from_secret: REGISTRY_USER_ALIYUN
       password:
@@ -314,7 +314,7 @@ steps:
       dockerfile: .beagle/kube-scheduler.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-scheduler
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: amd64
       args: 'TARGETOS=linux,TARGETARCH=amd64'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -335,7 +335,7 @@ steps:
       dockerfile: .beagle/kube-scheduler.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-scheduler
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: arm64
       args: 'TARGETOS=linux,TARGETARCH=arm64'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -356,7 +356,7 @@ steps:
       dockerfile: .beagle/kube-scheduler.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-scheduler
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: ppc64le
       args: 'TARGETOS=linux,TARGETARCH=ppc64le'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -377,7 +377,7 @@ steps:
       dockerfile: .beagle/kube-scheduler.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-scheduler
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: mips64le
       args: 'TARGETOS=linux,TARGETARCH=mips64le'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -392,8 +392,8 @@ steps:
     image: registry-vpc.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:1.0
     settings:
       platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/mips64le
-      template: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-scheduler:v1.26.2-beagle-ARCH
-      target: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-scheduler:v1.26.2-beagle
+      template: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-scheduler:v1.26.3-beagle-ARCH
+      target: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-scheduler:v1.26.3-beagle
       username:
         from_secret: REGISTRY_USER_ALIYUN
       password:
@@ -414,7 +414,7 @@ steps:
       dockerfile: .beagle/kubelet.dockerfile
       cwd: _output/local/bin
       repo: wod/kubelet
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: amd64
       args: 'TARGETOS=linux,TARGETARCH=amd64'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -435,7 +435,7 @@ steps:
       dockerfile: .beagle/kubelet.dockerfile
       cwd: _output/local/bin
       repo: wod/kubelet
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: arm64
       args: 'TARGETOS=linux,TARGETARCH=arm64'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -456,7 +456,7 @@ steps:
       dockerfile: .beagle/kubelet.dockerfile
       cwd: _output/local/bin
       repo: wod/kubelet
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: ppc64le
       args: 'TARGETOS=linux,TARGETARCH=ppc64le'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -477,7 +477,7 @@ steps:
       dockerfile: .beagle/kubelet.dockerfile
       cwd: _output/local/bin
       repo: wod/kubelet
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: mips64le
       args: 'TARGETOS=linux,TARGETARCH=mips64le'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -492,8 +492,8 @@ steps:
     image: registry-vpc.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:1.0
     settings:
       platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/mips64le
-      template: registry-vpc.cn-qingdao.aliyuncs.com/wod/kubelet:v1.26.2-beagle-ARCH
-      target: registry-vpc.cn-qingdao.aliyuncs.com/wod/kubelet:v1.26.2-beagle
+      template: registry-vpc.cn-qingdao.aliyuncs.com/wod/kubelet:v1.26.3-beagle-ARCH
+      target: registry-vpc.cn-qingdao.aliyuncs.com/wod/kubelet:v1.26.3-beagle
       username:
         from_secret: REGISTRY_USER_ALIYUN
       password:
@@ -514,7 +514,7 @@ steps:
       dockerfile: .beagle/kube-proxy.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-proxy
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: amd64
       args: 'TARGETOS=linux,TARGETARCH=amd64'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -535,7 +535,7 @@ steps:
       dockerfile: .beagle/kube-proxy.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-proxy
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: arm64
       args: 'TARGETOS=linux,TARGETARCH=arm64'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -556,7 +556,7 @@ steps:
       dockerfile: .beagle/kube-proxy.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-proxy
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: ppc64le
       args: 'TARGETOS=linux,TARGETARCH=ppc64le'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -577,7 +577,7 @@ steps:
       dockerfile: .beagle/kube-proxy.dockerfile
       cwd: _output/local/bin
       repo: wod/kube-proxy
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: mips64le
       args: 'TARGETOS=linux,TARGETARCH=mips64le'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -592,8 +592,8 @@ steps:
     image: registry-vpc.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:1.0
     settings:
       platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/mips64le
-      template: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-proxy:v1.26.2-beagle-ARCH
-      target: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-proxy:v1.26.2-beagle
+      template: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-proxy:v1.26.3-beagle-ARCH
+      target: registry-vpc.cn-qingdao.aliyuncs.com/wod/kube-proxy:v1.26.3-beagle
       username:
         from_secret: REGISTRY_USER_ALIYUN
       password:
@@ -614,7 +614,7 @@ steps:
       dockerfile: .beagle/kubectl.dockerfile
       cwd: _output/local/bin
       repo: wod/kubectl
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: amd64
       args: 'TARGETOS=linux,TARGETARCH=amd64'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -635,7 +635,7 @@ steps:
       dockerfile: .beagle/kubectl.dockerfile
       cwd: _output/local/bin
       repo: wod/kubectl
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: arm64
       args: 'TARGETOS=linux,TARGETARCH=arm64'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -656,7 +656,7 @@ steps:
       dockerfile: .beagle/kubectl.dockerfile
       cwd: _output/local/bin
       repo: wod/kubectl
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: ppc64le
       args: 'TARGETOS=linux,TARGETARCH=ppc64le'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -677,7 +677,7 @@ steps:
       dockerfile: .beagle/kubectl.dockerfile
       cwd: _output/local/bin
       repo: wod/kubectl
-      version: 'v1.26.2-beagle'
+      version: 'v1.26.3-beagle'
       channel: mips64le
       args: 'TARGETOS=linux,TARGETARCH=mips64le'
       registry: registry-vpc.cn-qingdao.aliyuncs.com
@@ -692,8 +692,8 @@ steps:
     image: registry-vpc.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:1.0
     settings:
       platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/mips64le
-      template: registry-vpc.cn-qingdao.aliyuncs.com/wod/kubectl:v1.26.2-beagle-ARCH
-      target: registry-vpc.cn-qingdao.aliyuncs.com/wod/kubectl:v1.26.2-beagle
+      template: registry-vpc.cn-qingdao.aliyuncs.com/wod/kubectl:v1.26.3-beagle-ARCH
+      target: registry-vpc.cn-qingdao.aliyuncs.com/wod/kubectl:v1.26.3-beagle
       username:
         from_secret: REGISTRY_USER_ALIYUN
       password:
