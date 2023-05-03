@@ -1,4 +1,4 @@
-# version
+# kubernetes
 
 <https://github.com/kubernetes/kubernetes>
 
@@ -7,17 +7,17 @@ git remote add upstream git@github.com:kubernetes/kubernetes.git
 
 git fetch upstream
 
-git merge v1.26.3
+git merge v1.26.4
 ```
 
 ## images
 
 ```bash
-# gitlab.wodcloud.com/cloud/kubernetes-release
+# github.com/open-beagle/kubernetes-release
 registry.cn-qingdao.aliyuncs.com/wod/debian-base:v1.3.0-$ARCH
 registry.cn-qingdao.aliyuncs.com/wod/debian-iptables:v1.4.0-$ARCH
 
-# pause
+# github.com/open-beagle/kubernetes/build/pause
 # registry.cn-qingdao.aliyuncs.com/wod/pause:3.7-$ARCH
 bash .beagle/build.sh
 ```
@@ -31,8 +31,8 @@ bash .beagle/build.sh
 # --entrypoint bash \
 # -v $PWD/:/go/src/k8s.io/kubernetes \
 # -w /go/src/k8s.io/kubernetes \
-# -e KUBE_GIT_VERSION=v1.26.3-beagle \
-# -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64 linux/ppc64le linux/mips64le" \
+# -e KUBE_GIT_VERSION=v1.26.4-beagle \
+# -e KUBE_BUILD_PLATFORMS="linux/loong64" \
 # -e GOPROXY=https://goproxy.cn \
 # registry.cn-qingdao.aliyuncs.com/wod/golang:1.16
 # git apply .beagle/v1.20.1-PATCH-k8s-add-mips64le-support.patch
@@ -42,8 +42,8 @@ docker run -it \
 --entrypoint bash \
 -v $PWD/:/go/src/k8s.io/kubernetes \
 -w /go/src/k8s.io/kubernetes \
--e KUBE_GIT_VERSION=v1.26.3-beagle \
--e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64 linux/ppc64le linux/mips64le" \
+-e KUBE_GIT_VERSION=v1.26.4-beagle \
+-e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64 linux/ppc64le linux/mips64le linux/loong64" \
 -e GOPROXY=https://goproxy.cn \
 registry.cn-qingdao.aliyuncs.com/wod/golang:1.19
 
@@ -63,7 +63,7 @@ docker run -it --rm \
 -e PLUGIN_BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-base:v1.3.0 \
 -e PLUGIN_DOCKERFILE=.beagle/kube-apiserver.dockerfile \
 -e PLUGIN_REPO=wod/kube-apiserver \
--e PLUGIN_VERSION='v1.26.3-beagle' \
+-e PLUGIN_VERSION='v1.26.4-beagle' \
 -e PLUGIN_ARGS='TARGETOS=linux,TARGETARCH=amd64' \
 -e PLUGIN_REGISTRY=registry.cn-qingdao.aliyuncs.com \
 -e REGISTRY_USER=<USER> \
@@ -74,7 +74,7 @@ registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
 ## patch
 
 ```bash
-git apply .beagle/v1.20.1-PATCH-k8s-add-mips64le-support.patch
+git apply .beagle/v1.26-mips64le.patch
 ```
 
 ## cache

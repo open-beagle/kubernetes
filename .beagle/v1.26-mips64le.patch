@@ -1,53 +1,57 @@
-From 031dd7ae9222430ad5864cb87e1fe4f128cf23de Mon Sep 17 00:00:00 2001
+From a99806949259234b2fdc07946428cf8a275a8903 Mon Sep 17 00:00:00 2001
 From: shucheng <shucheng@bd-apaas.com>
-Date: Tue, 14 Mar 2023 10:03:59 +0800
-Subject: [PATCH] mips64le
+Date: Fri, 7 Apr 2023 13:26:11 +0800
+Subject: [PATCH] l
 
 ---
- hack/lib/golang.sh | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ hack/lib/golang.sh | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
 diff --git a/hack/lib/golang.sh b/hack/lib/golang.sh
-index fb97ee76783..079e7d03c14 100755
+index 8a9f198528b..b88489ff816 100755
 --- a/hack/lib/golang.sh
 +++ b/hack/lib/golang.sh
-@@ -25,7 +25,7 @@ readonly KUBE_SUPPORTED_SERVER_PLATFORMS=(
+@@ -25,7 +25,8 @@ readonly KUBE_SUPPORTED_SERVER_PLATFORMS=(
    linux/amd64
    linux/arm
    linux/arm64
 -  linux/s390x
 +  linux/mips64le
++  linux/loong64
    linux/ppc64le
  )
  
-@@ -34,7 +34,7 @@ readonly KUBE_SUPPORTED_NODE_PLATFORMS=(
+@@ -34,7 +35,8 @@ readonly KUBE_SUPPORTED_NODE_PLATFORMS=(
    linux/amd64
    linux/arm
    linux/arm64
 -  linux/s390x
 +  linux/mips64le
++  linux/loong64
    linux/ppc64le
    windows/amd64
  )
-@@ -46,7 +46,7 @@ readonly KUBE_SUPPORTED_CLIENT_PLATFORMS=(
+@@ -46,7 +48,8 @@ readonly KUBE_SUPPORTED_CLIENT_PLATFORMS=(
    linux/386
    linux/arm
    linux/arm64
 -  linux/s390x
 +  linux/mips64le
++  linux/loong64
    linux/ppc64le
    darwin/amd64
    darwin/arm64
-@@ -61,7 +61,7 @@ readonly KUBE_SUPPORTED_TEST_PLATFORMS=(
+@@ -61,7 +64,8 @@ readonly KUBE_SUPPORTED_TEST_PLATFORMS=(
    linux/amd64
    linux/arm
    linux/arm64
 -  linux/s390x
 +  linux/mips64le
++  linux/loong64
    linux/ppc64le
    darwin/amd64
    darwin/arm64
-@@ -211,8 +211,8 @@ kube::golang::setup_platforms() {
+@@ -211,8 +215,8 @@ kube::golang::setup_platforms() {
  
    elif [[ "${KUBE_FASTBUILD:-}" == "true" ]]; then
      host_arch=$(kube::util::host_arch)
@@ -58,7 +62,7 @@ index fb97ee76783..079e7d03c14 100755
        host_arch="amd64"
      fi
      KUBE_SERVER_PLATFORMS=("linux/${host_arch}")
-@@ -433,9 +433,9 @@ kube::golang::set_platform_envs() {
+@@ -433,9 +437,13 @@ kube::golang::set_platform_envs() {
          export CGO_ENABLED=1
          export CC=${KUBE_LINUX_PPC64LE_CC:-powerpc64le-linux-gnu-gcc}
          ;;
@@ -66,10 +70,14 @@ index fb97ee76783..079e7d03c14 100755
 +      "linux/mips64le")
          export CGO_ENABLED=1
 -        export CC=${KUBE_LINUX_S390X_CC:-s390x-linux-gnu-gcc}
-+        export CC=${KUBE_LINUX_S390X_CC:-mips64el-linux-gnuabi64-gcc}
++        export CC=${KUBE_LINUX_MIPS64LE_CC:-mips64el-linux-gnuabi64-gcc}
++        ;;
++      "linux/loong64")
++        export CGO_ENABLED=1
++        export CC=${KUBE_LINUX_LOONG64_CC:-loongarch64-linux-gnu-gcc}
          ;;
      esac
    fi
 -- 
-2.30.2
+2.39.2
 
