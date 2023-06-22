@@ -44,6 +44,7 @@ docker run -it \
 -w /go/src/k8s.io/kubernetes \
 -e KUBE_GIT_VERSION=v1.20.15-beagle \
 -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64 linux/ppc64le" \
+-e KUBE_STATIC_OVERRIDES="cmd/kubelet" \
 -e GOPROXY=https://goproxy.cn \
 registry.cn-qingdao.aliyuncs.com/wod/golang:1.16
 
