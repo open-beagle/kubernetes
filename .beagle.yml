@@ -45,7 +45,7 @@ steps:
       KUBE_GIT_TREE_STATE: archive
     commands:
       - git apply .beagle/v1.26-mips64le.patch
-      - make all WHAT=cmd/kube-apiserver
+      - make kube-apiserver
     depends_on:
       - fetch
 
@@ -56,7 +56,7 @@ steps:
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le linux/mips64le linux/loong64
       KUBE_GIT_TREE_STATE: archive
     commands:
-      - make all WHAT=cmd/kube-controller-manager
+      - make kube-controller-manager
     depends_on:
       - golang-kube-apiserver
 
@@ -67,7 +67,7 @@ steps:
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le linux/mips64le linux/loong64
       KUBE_GIT_TREE_STATE: archive
     commands:
-      - make all WHAT=cmd/kube-scheduler
+      - make kube-scheduler
     depends_on:
       - golang-kube-controller-manager
 
@@ -80,7 +80,7 @@ steps:
       KUBE_GIT_TREE_STATE: archive
       KUBE_STATIC_OVERRIDES: cmd/kubelet
     commands:
-      - make all WHAT=cmd/kubelet
+      - make kubelet
     depends_on:
       - golang-kube-scheduler
 
@@ -92,7 +92,7 @@ steps:
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le linux/mips64le
       KUBE_GIT_TREE_STATE: archive
     commands:
-      - make all WHAT=cmd/kube-proxy
+      - make kube-proxy
     depends_on:
       - golang-kubelet
 
@@ -103,7 +103,7 @@ steps:
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le linux/mips64le linux/loong64
       KUBE_GIT_TREE_STATE: archive
     commands:
-      - make all WHAT=cmd/kubectl
+      - make kubectl
     depends_on:
       - golang-kube-proxy
 

@@ -44,7 +44,7 @@ docker run -it \
 -w /go/src/k8s.io/kubernetes \
 -e GOPROXY=https://goproxy.cn \
 -e KUBE_GIT_VERSION=v1.26.5-beagle \
--e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64 linux/ppc64le linux/mips64le linux/loong64" \
+-e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64 linux/ppc64le linux/mips64le" \
 -e KUBE_STATIC_OVERRIDES="cmd/kubelet" \
 registry.cn-qingdao.aliyuncs.com/wod/golang:1.20
 
@@ -59,12 +59,12 @@ docker run -it \
 -e KUBE_STATIC_OVERRIDES="cmd/kubelet" \
 registry.cn-qingdao.aliyuncs.com/wod/golang:1.20
 
-make all WHAT=cmd/kube-apiserver
-make all WHAT=cmd/kube-controller-manager
-make all WHAT=cmd/kube-scheduler
-make all WHAT=cmd/kube-proxy
-make all WHAT=cmd/kubectl
-make all WHAT=cmd/kubelet
+make kube-apiserver
+make kube-controller-manager
+make kube-scheduler
+make kube-proxy
+make kubectl
+make kubelet
 
 # docker debug
 docker run -it --rm \
