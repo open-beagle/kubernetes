@@ -80,6 +80,7 @@ steps:
       KUBE_GIT_VERSION: v1.18.20-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le
       KUBE_GIT_TREE_STATE: archive
+      KUBE_STATIC_OVERRIDES: cmd/kubelet
       GOPROXY: https://goproxy.cn
     commands:
       - make all WHAT=cmd/kubelet GOFLAGS=-v
