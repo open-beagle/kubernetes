@@ -42,17 +42,29 @@ docker run -it \
 --entrypoint bash \
 -v $PWD/:/go/src/k8s.io/kubernetes \
 -w /go/src/k8s.io/kubernetes \
+-e GOPROXY=https://goproxy.cn \
 -e KUBE_GIT_VERSION=v1.26.5-beagle \
 -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64 linux/ppc64le linux/mips64le linux/loong64" \
--e GOPROXY=https://goproxy.cn \
-registry.cn-qingdao.aliyuncs.com/wod/golang:1.19
+-e KUBE_STATIC_OVERRIDES="cmd/kubelet" \
+registry.cn-qingdao.aliyuncs.com/wod/golang:1.20
 
-make all WHAT=cmd/kube-apiserver GOFLAGS=-v
-make all WHAT=cmd/kube-controller-manager GOFLAGS=-v
-make all WHAT=cmd/kube-scheduler GOFLAGS=-v
-make all WHAT=cmd/kube-proxy GOFLAGS=-v
-make all WHAT=cmd/kubectl GOFLAGS=-v
-make all WHAT=cmd/kubelet GOFLAGS=-v
+docker run -it \
+--rm \
+--entrypoint bash \
+-v $PWD/:/go/src/k8s.io/kubernetes \
+-w /go/src/k8s.io/kubernetes \
+-e GOPROXY=https://goproxy.cn \
+-e KUBE_GIT_VERSION=v1.26.5-beagle \
+-e KUBE_BUILD_PLATFORMS="linux/loong64" \
+-e KUBE_STATIC_OVERRIDES="cmd/kubelet" \
+registry.cn-qingdao.aliyuncs.com/wod/golang:1.20
+
+make all WHAT=cmd/kube-apiserver
+make all WHAT=cmd/kube-controller-manager
+make all WHAT=cmd/kube-scheduler
+make all WHAT=cmd/kube-proxy
+make all WHAT=cmd/kubectl
+make all WHAT=cmd/kubelet
 
 # docker debug
 docker run -it --rm \
