@@ -77,6 +77,7 @@ steps:
       KUBE_GIT_VERSION: v1.24.14-beagle
       KUBE_BUILD_PLATFORMS: linux/amd64 linux/arm64 linux/ppc64le linux/mips64le
       KUBE_GIT_TREE_STATE: archive
+      KUBE_STATIC_OVERRIDES: cmd/kubelet
     commands:
       - make all WHAT=cmd/kubelet GOFLAGS=-v
     depends_on:
