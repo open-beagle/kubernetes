@@ -17,15 +17,15 @@
 REGISTRY ?= staging-k8s.gcr.io
 IMAGE = $(REGISTRY)/pause
 
-TAG ?= 3.7
+TAG ?= 3.9
 REV = $(shell git describe --contains --always --match='v*')
 
 # Architectures supported: amd64, arm, arm64, ppc64le and s390x
 ARCH ?= amd64
 # Operating systems supported: linux, windows
 OS ?= linux
-# OS Version for the Windows images: 1809, 20H2, ltsc2022
-OSVERSION ?= 1809 20H2 ltsc2022
+# OS Version for the Windows images: 1809, ltsc2022
+OSVERSION ?= 1809 ltsc2022
 
 # The output type could either be docker (local), or registry.
 # If it is registry, it will also allow us to push the Windows images.
@@ -35,12 +35,12 @@ ALL_OS = linux windows
 ALL_ARCH.linux = amd64 arm64 ppc64le mips64le
 ALL_OS_ARCH.linux = $(foreach arch, ${ALL_ARCH.linux}, linux-$(arch))
 ALL_ARCH.windows = amd64
-ALL_OSVERSIONS.windows := 1809 20H2 ltsc2022
+ALL_OSVERSIONS.windows := 1809 ltsc2022
 ALL_OS_ARCH.windows = $(foreach arch, $(ALL_ARCH.windows), $(foreach osversion, ${ALL_OSVERSIONS.windows}, windows-$(arch)-${osversion}))
 ALL_OS_ARCH = $(foreach os, $(ALL_OS), ${ALL_OS_ARCH.${os}})
 
 CFLAGS = -Os -Wall -Werror -static -DVERSION=v$(TAG)-$(REV)
-KUBE_CROSS_IMAGE ?= k8s.gcr.io/build-image/kube-cross
+KUBE_CROSS_IMAGE ?= registry.k8s.io/build-image/kube-cross
 KUBE_CROSS_VERSION ?= $(shell cat ../build-image/cross/VERSION)
 
 # NOTE(claudiub): The Windows pause image also requires the wincat binary we're compiling for the
@@ -69,7 +69,8 @@ TRIPLE.linux-s390x := s390x-linux-gnu
 TRIPLE.linux-mips64le := mips64el-linux-gnuabi64
 TRIPLE := ${TRIPLE.${OS}-${ARCH}}
 BASE.linux := scratch
-BASE.windows := mcr.microsoft.com/windows/nanoserver
+# Source for windows pause image base is located at https://github.com/microsoft/windows-pause-image-base
+BASE.windows := mcr.microsoft.com/oss/kubernetes/windows-pause-image-base:v0.2
 BASE := ${BASE.${OS}}
 
 # If you want to build AND push all containers, see the 'all-push' rule.
@@ -78,11 +79,10 @@ all: all-container-docker
 # NOTE(claudiub): A non-default builder instance is needed in order to build Windows images.
 all-push: all-container-registry push-manifest
 
+push-manifest: SHELL:=/bin/bash
 push-manifest:
 	docker manifest create --amend $(IMAGE):$(TAG) $(shell echo $(ALL_ARCH.linux) | sed -e "s~[^ ]*~$(IMAGE):$(TAG)\-&~g")
 	set -x; for arch in $(ALL_ARCH.linux); do docker manifest annotate --os linux --arch $${arch} ${IMAGE}:${TAG} ${IMAGE}:${TAG}-$${arch}; done
-	# For Windows images, we also need to include the "os.version" in the manifest list, so the Windows node can pull the proper image it needs.
-	# we use awk to also trim the quotes around the OS version string.
 	docker manifest push --purge ${IMAGE}:${TAG}
 
 all-container-docker: $(addprefix sub-container-docker-,$(ALL_OS_ARCH.linux))
@@ -97,10 +97,9 @@ build: $(foreach binary, ${BIN}, bin/${binary}-${OS}-${ARCH})
 
 bin/${BIN.linux}-$(OS)-$(ARCH): $(SRCS)
 	mkdir -p bin
-	docker run --rm -u $$(id -u):$$(id -g) -v $$(pwd):/build \
+	docker run --rm -w /build -v $$(pwd):/build \
 		$(KUBE_CROSS_IMAGE):$(KUBE_CROSS_VERSION) \
 		/bin/bash -c "\
-			cd /build && \
 			$(TRIPLE)-gcc $(CFLAGS) -o $@ $^ && \
 			$(TRIPLE)-strip $(foreach binary, $@, ${binary}${EXTENSION})"
 
@@ -115,8 +114,8 @@ container: .container-${OS}-$(ARCH)
 	touch $@
 
 .container-windows-$(ARCH): $(foreach binary, ${BIN}, bin/${binary}-${OS}-${ARCH})
-	docker buildx build --pull --output=type=${OUTPUT_TYPE} --platform ${OS}/$(ARCH) \
-		-t $(IMAGE):$(TAG)-${OS}-$(ARCH)-${OSVERSION} --build-arg BASE=${BASE}:${OSVERSION} --build-arg ARCH=$(ARCH) -f Dockerfile_windows .
+	docker build --pull --output=bin --platform ${OS}/$(ARCH) \
+		-t $(IMAGE):$(TAG)-${OS}-$(ARCH)-${OSVERSION} --build-arg BASE=${BASE}-windows-${OSVERSION}-${ARCH} --build-arg ARCH=$(ARCH) -f Dockerfile_windows .
 	touch $@
 
 # Useful for testing, not automatically included in container image
