@@ -117,7 +117,7 @@ func TestPodGcOrphanedPodsWithFinalizer(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Error %v, while creating pod: %v", err, klog.KObj(pod))
 			}
-			defer testutils.RemovePodFinalizers(testCtx.ClientSet, t, []*v1.Pod{pod})
+			defer testutils.RemovePodFinalizers(testCtx.Ctx, testCtx.ClientSet, t, *pod)
 
 			pod.Status.Phase = test.phase
 			if _, err := testCtx.ClientSet.CoreV1().Pods(testCtx.NS.Name).UpdateStatus(testCtx.Ctx, pod, metav1.UpdateOptions{}); err != nil {
@@ -160,8 +160,8 @@ func TestTerminatingOnOutOfServiceNode(t *testing.T) {
 			withFinalizer:                 true,
 			wantPhase:                     v1.PodFailed,
 		},
-		"pod has phase when PodDisruptionConditions disabled": {
-			enablePodDisruptionConditions: true,
+		"pod has phase unchanged when PodDisruptionConditions disabled": {
+			enablePodDisruptionConditions: false,
 			withFinalizer:                 true,
 			wantPhase:                     v1.PodPending,
 		},
@@ -226,7 +226,7 @@ func TestTerminatingOnOutOfServiceNode(t *testing.T) {
 				t.Fatalf("Error %v, while creating pod: %v", err, klog.KObj(pod))
 			}
 			if test.withFinalizer {
-				defer testutils.RemovePodFinalizers(testCtx.ClientSet, t, []*v1.Pod{pod})
+				defer testutils.RemovePodFinalizers(testCtx.Ctx, testCtx.ClientSet, t, *pod)
 			}
 
 			// trigger termination of the pod, but with long grace period so that it is not removed immediately
@@ -246,7 +246,7 @@ func TestTerminatingOnOutOfServiceNode(t *testing.T) {
 			}
 			if test.withFinalizer {
 				// wait until the pod phase is set as expected
-				err = wait.PollImmediate(time.Second, time.Second*15, func() (bool, error) {
+				err = wait.Poll(time.Second, time.Second*15, func() (bool, error) {
 					var e error
 					pod, e = cs.CoreV1().Pods(pod.Namespace).Get(testCtx.Ctx, pod.Name, metav1.GetOptions{})
 					if e != nil {
@@ -278,6 +278,118 @@ func TestTerminatingOnOutOfServiceNode(t *testing.T) {
 				if err != nil {
 					t.Errorf("Error %q while waiting for the pod %q to be deleted", err, klog.KObj(pod))
 				}
+			}
+		})
+	}
+}
+
+// TestPodGcForPodsWithDuplicatedFieldKeys regression test for https://issues.k8s.io/118261
+func TestPodGcForPodsWithDuplicatedFieldKeys(t *testing.T) {
+	tests := map[string]struct {
+		pod                  *v1.Pod
+		wantDisruptionTarget *v1.PodCondition
+	}{
+		"Orphan pod with duplicated env vars": {
+			pod: &v1.Pod{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:       "testpod",
+					Finalizers: []string{"test.k8s.io/finalizer"},
+				},
+				Spec: v1.PodSpec{
+					NodeName: "non-existing-node",
+					Containers: []v1.Container{
+						{
+							Name:  "foo",
+							Image: "bar",
+							Env: []v1.EnvVar{
+								{
+									Name:  "XYZ",
+									Value: "1",
+								},
+								{
+									Name:  "XYZ",
+									Value: "2",
+								},
+							},
+						},
+					},
+				},
+			},
+			wantDisruptionTarget: &v1.PodCondition{
+				Type:    v1.DisruptionTarget,
+				Status:  v1.ConditionTrue,
+				Reason:  "DeletionByPodGC",
+				Message: "PodGC: node no longer exists",
+			},
+		},
+		"Orphan pod with duplicated ports; scenario from https://issues.k8s.io/113482": {
+			pod: &v1.Pod{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:       "testpod",
+					Finalizers: []string{"test.k8s.io/finalizer"},
+				},
+				Spec: v1.PodSpec{
+					NodeName: "non-existing-node",
+					Containers: []v1.Container{
+						{
+							Name:  "foo",
+							Image: "bar",
+							Ports: []v1.ContainerPort{
+								{
+									ContainerPort: 93,
+									HostPort:      9376,
+								},
+								{
+									ContainerPort: 93,
+									HostPort:      9377,
+								},
+							},
+						},
+					},
+				},
+			},
+			wantDisruptionTarget: &v1.PodCondition{
+				Type:    v1.DisruptionTarget,
+				Status:  v1.ConditionTrue,
+				Reason:  "DeletionByPodGC",
+				Message: "PodGC: node no longer exists",
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			defer featuregatetesting.SetFeatureGateDuringTest(t, utilfeature.DefaultFeatureGate, features.PodDisruptionConditions, true)()
+			testCtx := setup(t, "podgc-orphaned")
+			defer testutils.CleanupTest(t, testCtx)
+			cs := testCtx.ClientSet
+
+			pod := test.pod
+			pod.Namespace = testCtx.NS.Namespace
+			pod, err := cs.CoreV1().Pods(testCtx.NS.Name).Create(testCtx.Ctx, pod, metav1.CreateOptions{})
+			if err != nil {
+				t.Fatalf("Error %v, while creating pod: %v", err, klog.KObj(pod))
+			}
+			defer testutils.RemovePodFinalizers(testCtx.Ctx, testCtx.ClientSet, t, *pod)
+
+			// getting evicted due to NodeName being "non-existing-node"
+			err = wait.PollImmediate(time.Second, time.Second*15, testutils.PodIsGettingEvicted(cs, pod.Namespace, pod.Name))
+			if err != nil {
+				t.Fatalf("Error '%v' while waiting for the pod '%v' to be terminating", err, klog.KObj(pod))
+			}
+			pod, err = cs.CoreV1().Pods(testCtx.NS.Name).Get(testCtx.Ctx, pod.Name, metav1.GetOptions{})
+			if err != nil {
+				t.Fatalf("Error: '%v' while updating pod info: '%v'", err, klog.KObj(pod))
+			}
+			_, gotDisruptionTarget := podutil.GetPodCondition(&pod.Status, v1.DisruptionTarget)
+			if diff := cmp.Diff(test.wantDisruptionTarget, gotDisruptionTarget, cmpopts.IgnoreFields(v1.PodCondition{}, "LastTransitionTime")); diff != "" {
+				t.Errorf("Pod %v has unexpected DisruptionTarget condition: %s", klog.KObj(pod), diff)
+			}
+			if gotDisruptionTarget != nil && gotDisruptionTarget.LastTransitionTime.IsZero() {
+				t.Errorf("Pod %v has DisruptionTarget condition without LastTransitionTime", klog.KObj(pod))
+			}
+			if pod.Status.Phase != v1.PodFailed {
+				t.Errorf("Unexpected phase for pod %q. Got: %q, want: %q", klog.KObj(pod), pod.Status.Phase, v1.PodFailed)
 			}
 		})
 	}

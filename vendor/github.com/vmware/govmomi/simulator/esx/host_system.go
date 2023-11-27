@@ -52,7 +52,7 @@ var HostSystem = mo.HostSystem{
 		DynamicData:       types.DynamicData{},
 		ConnectionState:   "connected",
 		PowerState:        "poweredOn",
-		StandbyMode:       "",
+		StandbyMode:       "none",
 		InMaintenanceMode: false,
 		BootTime:          (*time.Time)(nil),
 		HealthSystemRuntime: &types.HealthSystemRuntime{
@@ -1740,9 +1740,19 @@ var HostSystem = mo.HostSystem{
 		CurrentEVCModeKey:  "",
 		Gateway:            (*types.HostListSummaryGatewaySummary)(nil),
 	},
-	Hardware:           (*types.HostHardwareInfo)(nil),
-	Capability:         (*types.HostCapability)(nil),
-	LicensableResource: types.HostLicensableResourceInfo{},
+	Hardware:   (*types.HostHardwareInfo)(nil),
+	Capability: (*types.HostCapability)(nil),
+	LicensableResource: types.HostLicensableResourceInfo{
+		Resource: []types.KeyAnyValue{
+			{
+				Key: "numCpuPackages",
+				Value: types.KeyValue{
+					Key:   "numCpuPackages",
+					Value: "2",
+				},
+			},
+		},
+	},
 	ConfigManager: types.HostConfigManager{
 		DynamicData:               types.DynamicData{},
 		CpuScheduler:              &types.ManagedObjectReference{Type: "HostCpuSchedulerSystem", Value: "cpuSchedulerSystem"},

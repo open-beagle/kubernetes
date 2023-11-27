@@ -392,6 +392,8 @@ func TestGetEtcdProbeEndpoint(t *testing.T) {
 }
 
 func TestComponentPod(t *testing.T) {
+	// priority value for system-node-critical class
+	priority := int32(2000001000)
 	var tests = []struct {
 		name     string
 		expected v1.Pod
@@ -419,6 +421,7 @@ func TestComponentPod(t *testing.T) {
 							Name: "foo",
 						},
 					},
+					Priority:          &priority,
 					PriorityClassName: "system-node-critical",
 					HostNetwork:       true,
 					Volumes:           []v1.Volume{},
@@ -627,6 +630,35 @@ spec:
   - image: gcr.io/google_containers/etcd-amd64:3.1.11
 status: {}
 `
+	validPodWithDifferentFieldsOrder = `
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    tier: control-plane
+    component: etcd
+  name: etcd
+  namespace: kube-system
+spec:
+  containers:
+  - image: gcr.io/google_containers/etcd-amd64:3.1.11
+status: {}
+`
+	validPod2 = `
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    component: etcd
+    tier: control-plane
+  name: etcd
+  namespace: kube-system
+spec:
+  containers:
+  - image: gcr.io/google_containers/etcd-amd64:3.1.12
+status: {}
+`
+
 	invalidPod = `---{ broken yaml @@@`
 )
 
@@ -698,8 +730,14 @@ func TestManifestFilesAreEqual(t *testing.T) {
 			expectErr:      false,
 		},
 		{
+			description:    "manifests are equal, ignore different fields order",
+			podYamls:       []string{validPod, validPodWithDifferentFieldsOrder},
+			expectedResult: true,
+			expectErr:      false,
+		},
+		{
 			description:    "manifests are not equal",
-			podYamls:       []string{validPod, validPod + "\n"},
+			podYamls:       []string{validPod, validPod2},
 			expectedResult: false,
 			expectErr:      false,
 		},
