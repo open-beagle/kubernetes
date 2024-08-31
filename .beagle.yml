@@ -3,7 +3,7 @@ name: docker
 
 trigger:
   branch:
-    - main
+    - release-v1.28
 
 workspace:
   path: /go/src/k8s.io/kubernetes
