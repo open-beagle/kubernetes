@@ -1,0 +1,83 @@
+From a99806949259234b2fdc07946428cf8a275a8903 Mon Sep 17 00:00:00 2001
+From: shucheng <shucheng@bd-apaas.com>
+Date: Fri, 7 Apr 2023 13:26:11 +0800
+Subject: [PATCH] l
+
+---
+ hack/lib/golang.sh | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
+
+diff --git a/hack/lib/golang.sh b/hack/lib/golang.sh
+index 8a9f198528b..b88489ff816 100755
+--- a/hack/lib/golang.sh
++++ b/hack/lib/golang.sh
+@@ -25,7 +25,8 @@ readonly KUBE_SUPPORTED_SERVER_PLATFORMS=(
+   linux/amd64
+   linux/arm
+   linux/arm64
+-  linux/s390x
++  linux/mips64le
++  linux/loong64
+   linux/ppc64le
+ )
+ 
+@@ -34,7 +35,8 @@ readonly KUBE_SUPPORTED_NODE_PLATFORMS=(
+   linux/amd64
+   linux/arm
+   linux/arm64
+-  linux/s390x
++  linux/mips64le
++  linux/loong64
+   linux/ppc64le
+   windows/amd64
+ )
+@@ -46,7 +48,8 @@ readonly KUBE_SUPPORTED_CLIENT_PLATFORMS=(
+   linux/386
+   linux/arm
+   linux/arm64
+-  linux/s390x
++  linux/mips64le
++  linux/loong64
+   linux/ppc64le
+   darwin/amd64
+   darwin/arm64
+@@ -61,7 +64,8 @@ readonly KUBE_SUPPORTED_TEST_PLATFORMS=(
+   linux/amd64
+   linux/arm
+   linux/arm64
+-  linux/s390x
++  linux/mips64le
++  linux/loong64
+   linux/ppc64le
+   darwin/amd64
+   darwin/arm64
+@@ -211,8 +215,8 @@ kube::golang::setup_platforms() {
+ 
+   elif [[ "${KUBE_FASTBUILD:-}" == "true" ]]; then
+     host_arch=$(kube::util::host_arch)
+-    if [[ "${host_arch}" != "amd64" && "${host_arch}" != "arm64" && "${host_arch}" != "ppc64le" && "${host_arch}" != "s390x" ]]; then
+-      # on any platform other than amd64, arm64, ppc64le and s390x, we just default to amd64
++    if [[ "${host_arch}" != "amd64" && "${host_arch}" != "arm64" && "${host_arch}" != "ppc64le" && "${host_arch}" != "mips64le" ]]; then
++      # on any platform other than amd64, arm64, ppc64le and mips64le, we just default to amd64
+       host_arch="amd64"
+     fi
+     KUBE_SERVER_PLATFORMS=("linux/${host_arch}")
+@@ -433,9 +437,13 @@ kube::golang::set_platform_envs() {
+         export CGO_ENABLED=1
+         export CC=${KUBE_LINUX_PPC64LE_CC:-powerpc64le-linux-gnu-gcc}
+         ;;
+-      "linux/s390x")
++      "linux/mips64le")
+         export CGO_ENABLED=1
+-        export CC=${KUBE_LINUX_S390X_CC:-s390x-linux-gnu-gcc}
++        export CC=${KUBE_LINUX_MIPS64LE_CC:-mips64el-linux-gnuabi64-gcc}
++        ;;
++      "linux/loong64")
++        export CGO_ENABLED=1
++        export CC=${KUBE_LINUX_LOONG64_CC:-loongarch64-linux-gnu-gcc}
+         ;;
+     esac
+   fi
+-- 
+2.39.2
+
