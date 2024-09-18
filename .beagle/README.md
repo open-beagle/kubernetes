@@ -7,7 +7,7 @@ git remote add upstream git@github.com:kubernetes/kubernetes.git
 
 git fetch upstream
 
-git merge v1.30.4
+git merge v1.30.5
 ```
 
 ## images
@@ -31,7 +31,7 @@ bash .beagle/build.sh
 # --entrypoint bash \
 # -v $PWD/:/go/src/k8s.io/kubernetes \
 # -w /go/src/k8s.io/kubernetes \
-# -e KUBE_GIT_VERSION=v1.30.4-beagle \
+# -e KUBE_GIT_VERSION=v1.30.5-beagle \
 # -e KUBE_BUILD_PLATFORMS="linux/loong64" \
 # -e GOPROXY=https://goproxy.cn \
 # registry.cn-qingdao.aliyuncs.com/wod/golang:1.16
@@ -42,7 +42,7 @@ docker run -it \
   --entrypoint bash \
   -v $PWD/:/go/src/k8s.io/kubernetes \
   -w /go/src/k8s.io/kubernetes \
-  -e KUBE_GIT_VERSION=v1.30.4-beagle \
+  -e KUBE_GIT_VERSION=v1.30.5-beagle \
   -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
   -e KUBE_STATIC_OVERRIDES="cmd/kubelet" \
   registry.cn-qingdao.aliyuncs.com/wod/golang:1.22
@@ -60,7 +60,7 @@ docker run -it \
   --entrypoint bash \
   -v $PWD/:/go/src/k8s.io/kubernetes \
   -w /go/src/k8s.io/kubernetes \
-  -e KUBE_GIT_VERSION=v1.30.4-beagle \
+  -e KUBE_GIT_VERSION=v1.30.5-beagle \
   -e KUBE_BUILD_PLATFORMS="linux/loong64" \
   -e KUBE_STATIC_OVERRIDES="cmd/kubelet" \
   registry.cn-qingdao.aliyuncs.com/wod/golang:1.22-loongnix
@@ -82,7 +82,7 @@ docker run -it --rm \
 -e PLUGIN_BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-base:v1.3.0 \
 -e PLUGIN_DOCKERFILE=.beagle/kube-apiserver.dockerfile \
 -e PLUGIN_REPO=wod/kube-apiserver \
--e PLUGIN_VERSION='v1.30.4-beagle' \
+-e PLUGIN_VERSION='v1.30.5-beagle' \
 -e PLUGIN_ARGS='TARGETOS=linux,TARGETARCH=amd64' \
 -e PLUGIN_REGISTRY=registry.cn-qingdao.aliyuncs.com \
 -e REGISTRY_USER=<USER> \
