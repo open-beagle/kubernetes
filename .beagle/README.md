@@ -102,9 +102,9 @@ git apply .beagle/v1.26-mips64le.patch
 # 构建缓存-->推送缓存至服务器
 docker run --rm \
   -e PLUGIN_REBUILD=true \
-  -e PLUGIN_ENDPOINT=$PLUGIN_ENDPOINT \
-  -e PLUGIN_ACCESS_KEY=$PLUGIN_ACCESS_KEY \
-  -e PLUGIN_SECRET_KEY=$PLUGIN_SECRET_KEY \
+  -e PLUGIN_ENDPOINT=${S3_ENDPOINT_ALIYUN} \
+  -e PLUGIN_ACCESS_KEY=${S3_ACCESS_KEY_ALIYUN} \
+  -e PLUGIN_SECRET_KEY=${S3_SECRET_KEY_ALIYUN} \
   -e DRONE_REPO_OWNER="open-beagle" \
   -e DRONE_REPO_NAME="kubernetes" \
   -e PLUGIN_MOUNT="./.git" \
@@ -115,9 +115,9 @@ docker run --rm \
 # 读取缓存-->将缓存从服务器拉取到本地
 docker run --rm \
   -e PLUGIN_RESTORE=true \
-  -e PLUGIN_ENDPOINT=$PLUGIN_ENDPOINT \
-  -e PLUGIN_ACCESS_KEY=$PLUGIN_ACCESS_KEY \
-  -e PLUGIN_SECRET_KEY=$PLUGIN_SECRET_KEY \
+  -e PLUGIN_ENDPOINT=${S3_ENDPOINT_ALIYUN} \
+  -e PLUGIN_ACCESS_KEY=${S3_ACCESS_KEY_ALIYUN} \
+  -e PLUGIN_SECRET_KEY=${S3_SECRET_KEY_ALIYUN} \
   -e PLUGIN_PATH="/cache/open-beagle/kubernetes" \
   -v $(pwd):$(pwd) \
   -w $(pwd) \
