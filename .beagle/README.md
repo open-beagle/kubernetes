@@ -45,7 +45,7 @@ docker run -it \
   -e KUBE_GIT_VERSION=v1.30.14-beagle \
   -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
   -e KUBE_STATIC_OVERRIDES="cmd/kubelet" \
-  registry.cn-qingdao.aliyuncs.com/wod/golang:1.23
+  registry.cn-qingdao.aliyuncs.com/wod/golang:1.24 \
   -c "
   make kube-apiserver
   make kube-controller-manager
@@ -63,7 +63,7 @@ docker run -it \
   -e KUBE_GIT_VERSION=v1.30.14-beagle \
   -e KUBE_BUILD_PLATFORMS="linux/loong64" \
   -e KUBE_STATIC_OVERRIDES="cmd/kubelet" \
-  registry.cn-qingdao.aliyuncs.com/wod/golang:1.22-loongnix
+  registry.cn-qingdao.aliyuncs.com/wod/golang:1.24-loongnix
   -c "
   make kube-apiserver
   make kube-controller-manager

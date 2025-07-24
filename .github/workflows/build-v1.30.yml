@@ -31,6 +31,14 @@ jobs:
           username: ${{ secrets.REGISTRY_USER_ALIYUN }}
           password: ${{ secrets.REGISTRY_PASSWORD_ALIYUN }}
 
+      - name: Cross Build VCS
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
+            -w /go/src/k8s.io/kubernetes \
+            ghcr.io/${{ github.repository_owner }}/golang:1.24 \
+            git config --global --add safe.directory $PWD
+
       - name: Cross Build kube-apiserver
         run: |
           docker run --rm -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
