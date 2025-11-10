@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # 允许手动触发
 
 env:
-  BUILD_VERSION: v1.30.14
+  BUILD_VERSION: v1.30.14-beagle
 
 jobs:
   build:
@@ -31,19 +31,14 @@ jobs:
           username: ${{ secrets.REGISTRY_USER_ALIYUN }}
           password: ${{ secrets.REGISTRY_PASSWORD_ALIYUN }}
 
-      - name: Cross Build VCS
-        run: |
-          git config --global --add safe.directory $PWD
-
       - name: Cross Build kube-apiserver
         run: |
           docker run --rm -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
             -w /go/src/k8s.io/kubernetes \
             -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }}-beagle \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
-            -e KUBE_GIT_VERSION=archive \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
-            make kube-apiserver
+            bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-apiserver"
 
       - name: Cross Build kube-controller-manager
         run: |
@@ -51,9 +46,8 @@ jobs:
             -w /go/src/k8s.io/kubernetes \
             -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }}-beagle \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
-            -e KUBE_GIT_VERSION=archive \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
-            make kube-controller-manager
+            bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-controller-manager"
 
       - name: Cross Build kube-scheduler
         run: |
@@ -61,9 +55,8 @@ jobs:
             -w /go/src/k8s.io/kubernetes \
             -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }}-beagle \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
-            -e KUBE_GIT_VERSION=archive \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
-            make kube-scheduler
+            bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-scheduler"
 
       - name: Cross Build kubelet
         run: |
@@ -71,9 +64,8 @@ jobs:
             -w /go/src/k8s.io/kubernetes \
             -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }}-beagle \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
-            -e KUBE_GIT_VERSION=archive \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
-            make kubelet
+            bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kubelet"
 
       - name: Cross Build kube-proxy
         run: |
@@ -81,9 +73,8 @@ jobs:
             -w /go/src/k8s.io/kubernetes \
             -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }}-beagle \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
-            -e KUBE_GIT_VERSION=archive \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
-            make kube-proxy
+            bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-proxy"
 
       - name: Cross Build kubectl
         run: |
@@ -91,9 +82,8 @@ jobs:
             -w /go/src/k8s.io/kubernetes \
             -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }}-beagle \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
-            -e KUBE_GIT_VERSION=archive \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
-            make kubectl
+            bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kubectl"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
