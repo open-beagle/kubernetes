@@ -35,7 +35,7 @@ jobs:
         run: |
           docker run --rm -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
             -w /go/src/k8s.io/kubernetes \
-            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }}-beagle \
+            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
             bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-apiserver"
@@ -44,7 +44,7 @@ jobs:
         run: |
           docker run --rm -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
             -w /go/src/k8s.io/kubernetes \
-            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }}-beagle \
+            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
             bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-controller-manager"
@@ -53,7 +53,7 @@ jobs:
         run: |
           docker run --rm -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
             -w /go/src/k8s.io/kubernetes \
-            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }}-beagle \
+            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
             bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-scheduler"
@@ -62,7 +62,7 @@ jobs:
         run: |
           docker run --rm -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
             -w /go/src/k8s.io/kubernetes \
-            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }}-beagle \
+            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
             bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kubelet"
@@ -71,7 +71,7 @@ jobs:
         run: |
           docker run --rm -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
             -w /go/src/k8s.io/kubernetes \
-            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }}-beagle \
+            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
             bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-proxy"
@@ -80,7 +80,7 @@ jobs:
         run: |
           docker run --rm -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
             -w /go/src/k8s.io/kubernetes \
-            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }}-beagle \
+            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
             bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kubectl"
@@ -100,7 +100,7 @@ jobs:
             registry.cn-qingdao.aliyuncs.com/wod/kube-apiserver:${{ env.BUILD_VERSION }}-amd64
           build-args: |
             BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-base:v1.3.0-amd64
-            VERSION=${{ env.BUILD_VERSION }}-beagle
+            VERSION=${{ env.BUILD_VERSION }}
             TARGETOS=linux
             TARGETARCH=amd64
           provenance: false
@@ -118,7 +118,7 @@ jobs:
             registry.cn-qingdao.aliyuncs.com/wod/kube-apiserver:${{ env.BUILD_VERSION }}-arm64
           build-args: |
             BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-base:v1.3.0-arm64
-            VERSION=${{ env.BUILD_VERSION }}-beagle
+            VERSION=${{ env.BUILD_VERSION }}
             TARGETOS=linux
             TARGETARCH=arm64
           provenance: false
@@ -148,7 +148,7 @@ jobs:
             registry.cn-qingdao.aliyuncs.com/wod/kube-controller-manager:${{ env.BUILD_VERSION }}-amd64
           build-args: |
             BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-base:v1.3.0-amd64
-            VERSION=${{ env.BUILD_VERSION }}-beagle
+            VERSION=${{ env.BUILD_VERSION }}
             TARGETOS=linux
             TARGETARCH=amd64
           provenance: false
@@ -166,7 +166,7 @@ jobs:
             registry.cn-qingdao.aliyuncs.com/wod/kube-controller-manager:${{ env.BUILD_VERSION }}-arm64
           build-args: |
             BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-base:v1.3.0-arm64
-            VERSION=${{ env.BUILD_VERSION }}-beagle
+            VERSION=${{ env.BUILD_VERSION }}
             TARGETOS=linux
             TARGETARCH=arm64
           provenance: false
@@ -196,7 +196,7 @@ jobs:
             registry.cn-qingdao.aliyuncs.com/wod/kube-scheduler:${{ env.BUILD_VERSION }}-amd64
           build-args: |
             BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-base:v1.3.0-amd64
-            VERSION=${{ env.BUILD_VERSION }}-beagle
+            VERSION=${{ env.BUILD_VERSION }}
             TARGETOS=linux
             TARGETARCH=amd64
           provenance: false
@@ -214,7 +214,7 @@ jobs:
             registry.cn-qingdao.aliyuncs.com/wod/kube-scheduler:${{ env.BUILD_VERSION }}-arm64
           build-args: |
             BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-base:v1.3.0-arm64
-            VERSION=${{ env.BUILD_VERSION }}-beagle
+            VERSION=${{ env.BUILD_VERSION }}
             TARGETOS=linux
             TARGETARCH=arm64
           provenance: false
@@ -244,7 +244,7 @@ jobs:
             registry.cn-qingdao.aliyuncs.com/wod/kubelet:${{ env.BUILD_VERSION }}-amd64
           build-args: |
             BASE=registry.cn-qingdao.aliyuncs.com/wod/alpine:3-amd64
-            VERSION=${{ env.BUILD_VERSION }}-beagle
+            VERSION=${{ env.BUILD_VERSION }}
             TARGETOS=linux
             TARGETARCH=amd64
           provenance: false
@@ -262,7 +262,7 @@ jobs:
             registry.cn-qingdao.aliyuncs.com/wod/kubelet:${{ env.BUILD_VERSION }}-arm64
           build-args: |
             BASE=registry.cn-qingdao.aliyuncs.com/wod/alpine:3-arm64
-            VERSION=${{ env.BUILD_VERSION }}-beagle
+            VERSION=${{ env.BUILD_VERSION }}
             TARGETOS=linux
             TARGETARCH=arm64
           provenance: false
@@ -292,7 +292,7 @@ jobs:
             registry.cn-qingdao.aliyuncs.com/wod/kube-proxy:${{ env.BUILD_VERSION }}-amd64
           build-args: |
             BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-iptables:v1.4.0-amd64
-            VERSION=${{ env.BUILD_VERSION }}-beagle
+            VERSION=${{ env.BUILD_VERSION }}
             TARGETOS=linux
             TARGETARCH=amd64
           provenance: false
@@ -310,7 +310,7 @@ jobs:
             registry.cn-qingdao.aliyuncs.com/wod/kube-proxy:${{ env.BUILD_VERSION }}-arm64
           build-args: |
             BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-iptables:v1.4.0-arm64
-            VERSION=${{ env.BUILD_VERSION }}-beagle
+            VERSION=${{ env.BUILD_VERSION }}
             TARGETOS=linux
             TARGETARCH=arm64
           provenance: false
@@ -340,7 +340,7 @@ jobs:
             registry.cn-qingdao.aliyuncs.com/wod/kubectl:${{ env.BUILD_VERSION }}-amd64
           build-args: |
             BASE=registry.cn-qingdao.aliyuncs.com/wod/alpine:3-amd64
-            VERSION=${{ env.BUILD_VERSION }}-beagle
+            VERSION=${{ env.BUILD_VERSION }}
             TARGETOS=linux
             TARGETARCH=amd64
           provenance: false
@@ -358,7 +358,7 @@ jobs:
             registry.cn-qingdao.aliyuncs.com/wod/kubectl:${{ env.BUILD_VERSION }}-arm64
           build-args: |
             BASE=registry.cn-qingdao.aliyuncs.com/wod/alpine:3-arm64
-            VERSION=${{ env.BUILD_VERSION }}-beagle
+            VERSION=${{ env.BUILD_VERSION }}
             TARGETOS=linux
             TARGETARCH=arm64
           provenance: false
