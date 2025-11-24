@@ -31,6 +31,12 @@ jobs:
           username: ${{ secrets.REGISTRY_USER_ALIYUN }}
           password: ${{ secrets.REGISTRY_PASSWORD_ALIYUN }}
 
+      - name: Apply kubectl patch (uptime feature)
+        run: |
+          if [ -f .beagle/v1.30-kubectl.patch ]; then
+            git apply .beagle/v1.30-kubectl.patch || echo "Patch may already be applied"
+          fi
+
       - name: Cross Build kube-apiserver
         run: |
           docker run --rm -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
