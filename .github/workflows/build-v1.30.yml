@@ -43,6 +43,7 @@ jobs:
             -w /go/src/k8s.io/kubernetes \
             -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
+            -e KUBE_GIT_TREE_STATE=archive \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
             bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-apiserver"
 
@@ -52,6 +53,7 @@ jobs:
             -w /go/src/k8s.io/kubernetes \
             -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
+            -e KUBE_GIT_TREE_STATE=archive \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
             bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-controller-manager"
 
@@ -61,6 +63,7 @@ jobs:
             -w /go/src/k8s.io/kubernetes \
             -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
+            -e KUBE_GIT_TREE_STATE=archive \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
             bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-scheduler"
 
@@ -70,6 +73,7 @@ jobs:
             -w /go/src/k8s.io/kubernetes \
             -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
+            -e KUBE_GIT_TREE_STATE=archive \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
             bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kubelet"
 
@@ -79,6 +83,7 @@ jobs:
             -w /go/src/k8s.io/kubernetes \
             -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
+            -e KUBE_GIT_TREE_STATE=archive \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
             bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-proxy"
 
@@ -88,6 +93,7 @@ jobs:
             -w /go/src/k8s.io/kubernetes \
             -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
             -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
+            -e KUBE_GIT_TREE_STATE=archive \
             ghcr.io/${{ github.repository_owner }}/golang:1.24 \
             bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kubectl"
 
