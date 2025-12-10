@@ -1,0 +1,59 @@
+From 73ad10ca892fe326426ba65cb3a2f425a03a1a69 Mon Sep 17 00:00:00 2001
+From: shucheng <shucheng@bd-apaas.com>
+Date: Wed, 23 Dec 2020 23:26:48 +0800
+Subject: [PATCH] v1.20.1 PATCH k8s add mips64le support
+
+---
+ hack/lib/golang.sh | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/hack/lib/golang.sh b/hack/lib/golang.sh
+index bef1d837703..dcc86b5d114 100755
+--- a/hack/lib/golang.sh
++++ b/hack/lib/golang.sh
+@@ -27,6 +27,7 @@ readonly KUBE_SUPPORTED_SERVER_PLATFORMS=(
+   linux/arm64
+   linux/s390x
+   linux/ppc64le
++  linux/mips64le
+ )
+ 
+ # The node platforms we build for
+@@ -36,6 +37,7 @@ readonly KUBE_SUPPORTED_NODE_PLATFORMS=(
+   linux/arm64
+   linux/s390x
+   linux/ppc64le
++  linux/mips64le
+   windows/amd64
+ )
+ 
+@@ -48,6 +50,7 @@ readonly KUBE_SUPPORTED_CLIENT_PLATFORMS=(
+   linux/arm64
+   linux/s390x
+   linux/ppc64le
++  linux/mips64le
+   darwin/amd64
+   windows/amd64
+   windows/386
+@@ -61,6 +64,7 @@ readonly KUBE_SUPPORTED_TEST_PLATFORMS=(
+   linux/arm64
+   linux/s390x
+   linux/ppc64le
++  linux/mips64le
+   darwin/amd64
+   windows/amd64
+ )
+@@ -414,6 +418,10 @@ kube::golang::set_platform_envs() {
+         export CGO_ENABLED=1
+         export CC=${KUBE_LINUX_S390X_CC:-s390x-linux-gnu-gcc}
+         ;;
++      "linux/mips64le")
++        export CGO_ENABLED=1
++        export CC=${KUBE_LINUX_MIPS64LE_CC:-mips64el-linux-gnuabi64-gcc}
++        ;;
+     esac
+   fi
+ }
+-- 
+2.25.1
+

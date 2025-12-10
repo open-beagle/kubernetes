@@ -1,0 +1,12 @@
+ARG BASE
+
+FROM ${BASE}
+
+ARG AUTHOR
+ARG VERSION
+ARG TARGETOS
+ARG TARGETARCH
+
+LABEL maintainer=${AUTHOR} version=${VERSION}
+
+COPY ${TARGETOS}/${TARGETARCH}/kubelet /usr/local/bin/kubelet

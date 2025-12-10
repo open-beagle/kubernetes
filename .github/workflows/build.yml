@@ -1,0 +1,388 @@
+name: Build Release Images
+
+on:
+  push:
+    branches:
+      - release-v1.32
+
+env:
+  BUILD_VERSION: v1.32.10-beagle
+
+jobs:
+  build:
+    name: Build Images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Github Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to Aliyun Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: registry.cn-qingdao.aliyuncs.com
+          username: ${{ secrets.REGISTRY_USER_ALIYUN }}
+          password: ${{ secrets.REGISTRY_PASSWORD_ALIYUN }}
+
+      - name: Apply kubectl patch (uptime feature)
+        run: |
+          if [ -f .beagle/v1.30-kubectl.patch ]; then
+            git apply .beagle/v1.30-kubectl.patch || echo "Patch may already be applied"
+          fi
+
+      - name: Cross Build kube-apiserver
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
+            -w /go/src/k8s.io/kubernetes \
+            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
+            -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
+            -e KUBE_GIT_TREE_STATE=archive \
+            ghcr.io/${{ github.repository_owner }}/golang:1.24 \
+            bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-apiserver"
+
+      - name: Cross Build kube-controller-manager
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
+            -w /go/src/k8s.io/kubernetes \
+            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
+            -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
+            -e KUBE_GIT_TREE_STATE=archive \
+            ghcr.io/${{ github.repository_owner }}/golang:1.24 \
+            bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-controller-manager"
+
+      - name: Cross Build kube-scheduler
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
+            -w /go/src/k8s.io/kubernetes \
+            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
+            -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
+            -e KUBE_GIT_TREE_STATE=archive \
+            ghcr.io/${{ github.repository_owner }}/golang:1.24 \
+            bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-scheduler"
+
+      - name: Cross Build kubelet
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
+            -w /go/src/k8s.io/kubernetes \
+            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
+            -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
+            -e KUBE_GIT_TREE_STATE=archive \
+            ghcr.io/${{ github.repository_owner }}/golang:1.24 \
+            bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kubelet"
+
+      - name: Cross Build kube-proxy
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
+            -w /go/src/k8s.io/kubernetes \
+            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
+            -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
+            -e KUBE_GIT_TREE_STATE=archive \
+            ghcr.io/${{ github.repository_owner }}/golang:1.24 \
+            bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kube-proxy"
+
+      - name: Cross Build kubectl
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/go/src/k8s.io/kubernetes \
+            -w /go/src/k8s.io/kubernetes \
+            -e KUBE_GIT_VERSION=${{ env.BUILD_VERSION }} \
+            -e KUBE_BUILD_PLATFORMS="linux/amd64 linux/arm64" \
+            -e KUBE_GIT_TREE_STATE=archive \
+            ghcr.io/${{ github.repository_owner }}/golang:1.24 \
+            bash -c "git config --global --add safe.directory /go/src/k8s.io/kubernetes && make kubectl"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push images for amd64 - kube-apiserver
+        uses: docker/build-push-action@v5
+        with:
+          context: _output/local/bin
+          file: .beagle/kube-apiserver.dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kube-apiserver:${{ env.BUILD_VERSION }}-amd64
+            registry.cn-qingdao.aliyuncs.com/wod/kube-apiserver:${{ env.BUILD_VERSION }}-amd64
+          build-args: |
+            BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-base:v1.3.0-amd64
+            VERSION=${{ env.BUILD_VERSION }}
+            TARGETOS=linux
+            TARGETARCH=amd64
+          provenance: false
+          sbom: false
+
+      - name: Build and push images for arm64 - kube-apiserver
+        uses: docker/build-push-action@v5
+        with:
+          context: _output/local/bin
+          file: .beagle/kube-apiserver.dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kube-apiserver:${{ env.BUILD_VERSION }}-arm64
+            registry.cn-qingdao.aliyuncs.com/wod/kube-apiserver:${{ env.BUILD_VERSION }}-arm64
+          build-args: |
+            BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-base:v1.3.0-arm64
+            VERSION=${{ env.BUILD_VERSION }}
+            TARGETOS=linux
+            TARGETARCH=arm64
+          provenance: false
+          sbom: false
+
+      - name: Create and push multi-arch manifest - kube-apiserver
+        run: |
+          docker manifest create ghcr.io/${{ github.repository_owner }}/kube-apiserver:${{ env.BUILD_VERSION }} \
+            ghcr.io/${{ github.repository_owner }}/kube-apiserver:${{ env.BUILD_VERSION }}-amd64 \
+            ghcr.io/${{ github.repository_owner }}/kube-apiserver:${{ env.BUILD_VERSION }}-arm64
+          docker manifest push ghcr.io/${{ github.repository_owner }}/kube-apiserver:${{ env.BUILD_VERSION }}
+
+          docker manifest create registry.cn-qingdao.aliyuncs.com/wod/kube-apiserver:${{ env.BUILD_VERSION }} \
+            registry.cn-qingdao.aliyuncs.com/wod/kube-apiserver:${{ env.BUILD_VERSION }}-amd64 \
+            registry.cn-qingdao.aliyuncs.com/wod/kube-apiserver:${{ env.BUILD_VERSION }}-arm64
+          docker manifest push registry.cn-qingdao.aliyuncs.com/wod/kube-apiserver:${{ env.BUILD_VERSION }}
+
+      - name: Build and push images for amd64 - kube-controller-manager
+        uses: docker/build-push-action@v5
+        with:
+          context: _output/local/bin
+          file: .beagle/kube-controller-manager.dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kube-controller-manager:${{ env.BUILD_VERSION }}-amd64
+            registry.cn-qingdao.aliyuncs.com/wod/kube-controller-manager:${{ env.BUILD_VERSION }}-amd64
+          build-args: |
+            BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-base:v1.3.0-amd64
+            VERSION=${{ env.BUILD_VERSION }}
+            TARGETOS=linux
+            TARGETARCH=amd64
+          provenance: false
+          sbom: false
+
+      - name: Build and push images for arm64 - kube-controller-manager
+        uses: docker/build-push-action@v5
+        with:
+          context: _output/local/bin
+          file: .beagle/kube-controller-manager.dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kube-controller-manager:${{ env.BUILD_VERSION }}-arm64
+            registry.cn-qingdao.aliyuncs.com/wod/kube-controller-manager:${{ env.BUILD_VERSION }}-arm64
+          build-args: |
+            BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-base:v1.3.0-arm64
+            VERSION=${{ env.BUILD_VERSION }}
+            TARGETOS=linux
+            TARGETARCH=arm64
+          provenance: false
+          sbom: false
+
+      - name: Create and push multi-arch manifest - kube-controller-manager
+        run: |
+          docker manifest create ghcr.io/${{ github.repository_owner }}/kube-controller-manager:${{ env.BUILD_VERSION }} \
+            ghcr.io/${{ github.repository_owner }}/kube-controller-manager:${{ env.BUILD_VERSION }}-amd64 \
+            ghcr.io/${{ github.repository_owner }}/kube-controller-manager:${{ env.BUILD_VERSION }}-arm64
+          docker manifest push ghcr.io/${{ github.repository_owner }}/kube-controller-manager:${{ env.BUILD_VERSION }}
+
+          docker manifest create registry.cn-qingdao.aliyuncs.com/wod/kube-controller-manager:${{ env.BUILD_VERSION }} \
+            registry.cn-qingdao.aliyuncs.com/wod/kube-controller-manager:${{ env.BUILD_VERSION }}-amd64 \
+            registry.cn-qingdao.aliyuncs.com/wod/kube-controller-manager:${{ env.BUILD_VERSION }}-arm64
+          docker manifest push registry.cn-qingdao.aliyuncs.com/wod/kube-controller-manager:${{ env.BUILD_VERSION }}
+
+      - name: Build and push images for amd64 - kube-scheduler
+        uses: docker/build-push-action@v5
+        with:
+          context: _output/local/bin
+          file: .beagle/kube-scheduler.dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kube-scheduler:${{ env.BUILD_VERSION }}-amd64
+            registry.cn-qingdao.aliyuncs.com/wod/kube-scheduler:${{ env.BUILD_VERSION }}-amd64
+          build-args: |
+            BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-base:v1.3.0-amd64
+            VERSION=${{ env.BUILD_VERSION }}
+            TARGETOS=linux
+            TARGETARCH=amd64
+          provenance: false
+          sbom: false
+
+      - name: Build and push images for arm64 - kube-scheduler
+        uses: docker/build-push-action@v5
+        with:
+          context: _output/local/bin
+          file: .beagle/kube-scheduler.dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kube-scheduler:${{ env.BUILD_VERSION }}-arm64
+            registry.cn-qingdao.aliyuncs.com/wod/kube-scheduler:${{ env.BUILD_VERSION }}-arm64
+          build-args: |
+            BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-base:v1.3.0-arm64
+            VERSION=${{ env.BUILD_VERSION }}
+            TARGETOS=linux
+            TARGETARCH=arm64
+          provenance: false
+          sbom: false
+
+      - name: Create and push multi-arch manifest - kube-scheduler
+        run: |
+          docker manifest create ghcr.io/${{ github.repository_owner }}/kube-scheduler:${{ env.BUILD_VERSION }} \
+            ghcr.io/${{ github.repository_owner }}/kube-scheduler:${{ env.BUILD_VERSION }}-amd64 \
+            ghcr.io/${{ github.repository_owner }}/kube-scheduler:${{ env.BUILD_VERSION }}-arm64
+          docker manifest push ghcr.io/${{ github.repository_owner }}/kube-scheduler:${{ env.BUILD_VERSION }}
+
+          docker manifest create registry.cn-qingdao.aliyuncs.com/wod/kube-scheduler:${{ env.BUILD_VERSION }} \
+            registry.cn-qingdao.aliyuncs.com/wod/kube-scheduler:${{ env.BUILD_VERSION }}-amd64 \
+            registry.cn-qingdao.aliyuncs.com/wod/kube-scheduler:${{ env.BUILD_VERSION }}-arm64
+          docker manifest push registry.cn-qingdao.aliyuncs.com/wod/kube-scheduler:${{ env.BUILD_VERSION }}
+
+      - name: Build and push images for amd64 - kubelet
+        uses: docker/build-push-action@v5
+        with:
+          context: _output/local/bin
+          file: .beagle/kubelet.dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kubelet:${{ env.BUILD_VERSION }}-amd64
+            registry.cn-qingdao.aliyuncs.com/wod/kubelet:${{ env.BUILD_VERSION }}-amd64
+          build-args: |
+            BASE=registry.cn-qingdao.aliyuncs.com/wod/alpine:3-amd64
+            VERSION=${{ env.BUILD_VERSION }}
+            TARGETOS=linux
+            TARGETARCH=amd64
+          provenance: false
+          sbom: false
+
+      - name: Build and push images for arm64 - kubelet
+        uses: docker/build-push-action@v5
+        with:
+          context: _output/local/bin
+          file: .beagle/kubelet.dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kubelet:${{ env.BUILD_VERSION }}-arm64
+            registry.cn-qingdao.aliyuncs.com/wod/kubelet:${{ env.BUILD_VERSION }}-arm64
+          build-args: |
+            BASE=registry.cn-qingdao.aliyuncs.com/wod/alpine:3-arm64
+            VERSION=${{ env.BUILD_VERSION }}
+            TARGETOS=linux
+            TARGETARCH=arm64
+          provenance: false
+          sbom: false
+
+      - name: Create and push multi-arch manifest - kubelet
+        run: |
+          docker manifest create ghcr.io/${{ github.repository_owner }}/kubelet:${{ env.BUILD_VERSION }} \
+            ghcr.io/${{ github.repository_owner }}/kubelet:${{ env.BUILD_VERSION }}-amd64 \
+            ghcr.io/${{ github.repository_owner }}/kubelet:${{ env.BUILD_VERSION }}-arm64
+          docker manifest push ghcr.io/${{ github.repository_owner }}/kubelet:${{ env.BUILD_VERSION }}
+
+          docker manifest create registry.cn-qingdao.aliyuncs.com/wod/kubelet:${{ env.BUILD_VERSION }} \
+            registry.cn-qingdao.aliyuncs.com/wod/kubelet:${{ env.BUILD_VERSION }}-amd64 \
+            registry.cn-qingdao.aliyuncs.com/wod/kubelet:${{ env.BUILD_VERSION }}-arm64
+          docker manifest push registry.cn-qingdao.aliyuncs.com/wod/kubelet:${{ env.BUILD_VERSION }}
+
+      - name: Build and push images for amd64 - kube-proxy
+        uses: docker/build-push-action@v5
+        with:
+          context: _output/local/bin
+          file: .beagle/kube-proxy.dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kube-proxy:${{ env.BUILD_VERSION }}-amd64
+            registry.cn-qingdao.aliyuncs.com/wod/kube-proxy:${{ env.BUILD_VERSION }}-amd64
+          build-args: |
+            BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-iptables:v1.4.0-amd64
+            VERSION=${{ env.BUILD_VERSION }}
+            TARGETOS=linux
+            TARGETARCH=amd64
+          provenance: false
+          sbom: false
+
+      - name: Build and push images for arm64 - kube-proxy
+        uses: docker/build-push-action@v5
+        with:
+          context: _output/local/bin
+          file: .beagle/kube-proxy.dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kube-proxy:${{ env.BUILD_VERSION }}-arm64
+            registry.cn-qingdao.aliyuncs.com/wod/kube-proxy:${{ env.BUILD_VERSION }}-arm64
+          build-args: |
+            BASE=registry.cn-qingdao.aliyuncs.com/wod/debian-iptables:v1.4.0-arm64
+            VERSION=${{ env.BUILD_VERSION }}
+            TARGETOS=linux
+            TARGETARCH=arm64
+          provenance: false
+          sbom: false
+
+      - name: Create and push multi-arch manifest - kube-proxy
+        run: |
+          docker manifest create ghcr.io/${{ github.repository_owner }}/kube-proxy:${{ env.BUILD_VERSION }} \
+            ghcr.io/${{ github.repository_owner }}/kube-proxy:${{ env.BUILD_VERSION }}-amd64 \
+            ghcr.io/${{ github.repository_owner }}/kube-proxy:${{ env.BUILD_VERSION }}-arm64
+          docker manifest push ghcr.io/${{ github.repository_owner }}/kube-proxy:${{ env.BUILD_VERSION }}
+
+          docker manifest create registry.cn-qingdao.aliyuncs.com/wod/kube-proxy:${{ env.BUILD_VERSION }} \
+            registry.cn-qingdao.aliyuncs.com/wod/kube-proxy:${{ env.BUILD_VERSION }}-amd64 \
+            registry.cn-qingdao.aliyuncs.com/wod/kube-proxy:${{ env.BUILD_VERSION }}-arm64
+          docker manifest push registry.cn-qingdao.aliyuncs.com/wod/kube-proxy:${{ env.BUILD_VERSION }}
+
+      - name: Build and push images for amd64 - kubectl
+        uses: docker/build-push-action@v5
+        with:
+          context: _output/local/bin
+          file: .beagle/kubectl.dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kubectl:${{ env.BUILD_VERSION }}-amd64
+            registry.cn-qingdao.aliyuncs.com/wod/kubectl:${{ env.BUILD_VERSION }}-amd64
+          build-args: |
+            BASE=registry.cn-qingdao.aliyuncs.com/wod/alpine:3-amd64
+            VERSION=${{ env.BUILD_VERSION }}
+            TARGETOS=linux
+            TARGETARCH=amd64
+          provenance: false
+          sbom: false
+
+      - name: Build and push images for arm64 - kubectl
+        uses: docker/build-push-action@v5
+        with:
+          context: _output/local/bin
+          file: .beagle/kubectl.dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kubectl:${{ env.BUILD_VERSION }}-arm64
+            registry.cn-qingdao.aliyuncs.com/wod/kubectl:${{ env.BUILD_VERSION }}-arm64
+          build-args: |
+            BASE=registry.cn-qingdao.aliyuncs.com/wod/alpine:3-arm64
+            VERSION=${{ env.BUILD_VERSION }}
+            TARGETOS=linux
+            TARGETARCH=arm64
+          provenance: false
+          sbom: false
+
+      - name: Create and push multi-arch manifest - kubectl
+        run: |
+          docker manifest create ghcr.io/${{ github.repository_owner }}/kubectl:${{ env.BUILD_VERSION }} \
+            ghcr.io/${{ github.repository_owner }}/kubectl:${{ env.BUILD_VERSION }}-amd64 \
+            ghcr.io/${{ github.repository_owner }}/kubectl:${{ env.BUILD_VERSION }}-arm64
+          docker manifest push ghcr.io/${{ github.repository_owner }}/kubectl:${{ env.BUILD_VERSION }}
+
+          docker manifest create registry.cn-qingdao.aliyuncs.com/wod/kubectl:${{ env.BUILD_VERSION }} \
+            registry.cn-qingdao.aliyuncs.com/wod/kubectl:${{ env.BUILD_VERSION }}-amd64 \
+            registry.cn-qingdao.aliyuncs.com/wod/kubectl:${{ env.BUILD_VERSION }}-arm64
+          docker manifest push registry.cn-qingdao.aliyuncs.com/wod/kubectl:${{ env.BUILD_VERSION }}
