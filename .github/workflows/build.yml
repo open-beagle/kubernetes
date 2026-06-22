@@ -6,7 +6,7 @@ on:
       - release-v1.32
 
 env:
-  BUILD_VERSION: v1.32.10-beagle
+  BUILD_VERSION: v1.32.13-beagle
 
 jobs:
   build:
